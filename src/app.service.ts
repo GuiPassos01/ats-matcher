@@ -5,6 +5,8 @@ import { pdf } from 'pdf-to-img';
 import path from 'path/posix';
 import ollama from 'ollama';
 import { parseJSON } from 'ollama/src/utils.js';
+import z from 'zod';
+import { zodToJsonSchema } from 'zod-to-json-schema';
 
 @Injectable()
 export class AppService {
@@ -92,9 +94,11 @@ Extra brownie points if you:
         `,
         },
       ],
+      format: 'json',
     });
-
-    const responseContext = response.message.content;
-    return JSON.parse(responseContext);
+    console.log(response.message.content);
+    const country = JSON.parse(response.message.content);
+    console.log(country);
+    return country;
   }
 }
