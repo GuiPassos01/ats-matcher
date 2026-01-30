@@ -53,33 +53,19 @@ export class AppService {
       }
     }
 
-    const jobRequirements = await this.getJobRequirements(jobDescription);
+    const [jobRequirements, resumeKeyWords] = await Promise.all([
+      this.getJobRequirements(jobDescription),
+      this.getResumeKeyWords(fullTextArray),
+    ]);
 
-    const resumeKeyWords = await this.getResumeKeyWords(fullTextArray);
+    console.log('Job Requirements:', jobRequirements);
+    console.log('Resume Key Words:', resumeKeyWords);
 
-    const skills = await this.compareLists(
-      jobRequirements.skills,
-      resumeKeyWords.skills,
-    );
-
-    console.log('Job Requirements skills:', jobRequirements.skills);
-    console.log('Resume Key Words skills:', resumeKeyWords.skills);
-
-    const experience = this.compareLists(
-      jobRequirements.experience,
-      resumeKeyWords.experience,
-    );
-
-    console.log('Job Requirements experience:', jobRequirements.experience);
-    console.log('Resume Key Words experience:', resumeKeyWords.experience);
-
-    const education = this.compareLists(
-      jobRequirements.education,
-      resumeKeyWords.education,
-    );
-
-    console.log('Job Requirements education:', jobRequirements.education);
-    console.log('Resume Key Words education:', resumeKeyWords.education);
+    const [skills, experience, education] = await Promise.all([
+      this.compareLists(jobRequirements.skills, resumeKeyWords.skills),
+      this.compareLists(jobRequirements.experience, resumeKeyWords.experience),
+      this.compareLists(jobRequirements.education, resumeKeyWords.education),
+    ]);
 
     return { skills, experience, education };
   }
@@ -94,6 +80,7 @@ export class AppService {
           role: 'user',
           content: `
           Extract ONLY the explicit requirements from the JOB DESCRIPTION.
+          Don't forget about explicit technical skills and technologies mentioned in the JOB DESCRIPTION.
 
           RULES:
           - Do NOT infer or guess.
