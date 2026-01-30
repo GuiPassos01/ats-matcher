@@ -1,4 +1,5 @@
 import {
+  Body,
   Controller,
   Post,
   UploadedFile,
@@ -15,7 +16,13 @@ export class AppController {
   @ApiConsumes('multipart/form-data')
   @UseInterceptors(FileInterceptor('file'))
   @Post('file')
-  async uploadFile(@UploadedFile() file: Express.Multer.File) {
-    return await this.appService.extractTextWithOCR(file.buffer);
+  async uploadFile(
+    @UploadedFile() file: Express.Multer.File,
+    @Body('jobDescription') jobDescription: string,
+  ) {
+    return await this.appService.extractTextWithOCR(
+      file.buffer,
+      jobDescription,
+    );
   }
 }
